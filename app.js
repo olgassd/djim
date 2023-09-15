@@ -39,7 +39,7 @@ const postschema = new mongoose.Schema({
     image1: { type: String, required: true },
     image2: { type: String, required: true },
     texture: { type: String, required: true },
-    info: { type: String, required: true },
+    info: { type: String, required: true,unique: true},
     designer: { type: String, required: true },
     colors: { type: Array, required: true },
     sizes: { type: String, required: true },
@@ -47,6 +47,7 @@ const postschema = new mongoose.Schema({
     details: { type: String, required: true },
     quantity: { type: String, required: true },
     price: { type: String, required: true },
+    tags: { type: String, required: true}
   });
   
 const Post = mongoose.model('post', postschema);
@@ -80,7 +81,6 @@ app.post('/addpost',upload.fields(
     { name: 'texture', maxCount: 1 }
   ]
   ), (req,res)=>{
-  console.log(req.body)  
   const post = new Post({
         image1:req.files['image1'][0].filename,
         image2:req.files['image2'][0].filename,
@@ -93,20 +93,20 @@ app.post('/addpost',upload.fields(
         details:req.body.details,
         quantity:req.body.quantity,
         price:req.body.price,
+        tags:req.body.tags
     })
     post.save()
   .then(savedUser => {
   })
   .catch(error => {
+    console.log(error)
   });
 })
 
 app.get('/getpost', (req, res) => {
-  console.log(req.body)
   Post.find()
     .then(docs => {
       res.json(docs);
-      console.log(docs);
     })
     .catch(err => {
       console.error(err);
@@ -159,6 +159,10 @@ app.get('/getpost', (req, res) => {
   });
   })
 
+  app.get('/ip/:ipadress',(req,res)=>{
+    console.log(req.params.ipadress)
+  })
+
   app.get('*', (req, res) => {
     res.sendFile('index.html', { root: path.join(__dirname, 'dist/store') }, (err) => {
       if (err) {
@@ -174,6 +178,6 @@ app.listen(process.env.PORT || 80,function(err){
         console.log(err)
     }
     else{
-        console.log('server connected')
+        console.log('server connected in :'+80)
     }
 })
